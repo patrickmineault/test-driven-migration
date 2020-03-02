@@ -70,9 +70,8 @@ class ChaoticRnn(object):
 if __name__ == "__main__":
     with h5py.File('inputs.mat', 'r') as f:
         # These are the reference inputs to the Matlab script.
-        x, r, z, wf, dt, M, N, ft = (np.array(f['x/value']).ravel(), 
-                                    np.array(f['r/value']).ravel(), 
-                                    np.array(f['z/value']).ravel(), 
+        x0, z0, wf, dt, M, N, ft = (np.array(f['x0/value']).ravel(), 
+                                    np.array(f['z0/value']).ravel(), 
                                     np.array(f['wf/value']).ravel(), 
                                     np.array(f['dt/value']).tolist(), 
                                     np.array(f['M/value']).T, 
@@ -87,32 +86,22 @@ if __name__ == "__main__":
     rnn = ChaoticRnn(N, 0.1)
 
     # Make sure that our RNN forward function maintains shape.
-    rnn.init_state()
-    xs, rs = rnn.x.shape, rnn.r.shape
-    rnn.forward()
-    assert xs == rnn.x.shape
-    assert rs == rnn.r.shape
-    
     # Force the initial state and connections for testing purposes.
-    rnn.x0 = x.copy()
-    rnn.z0 = z.copy()
+    rnn.x0 = x0.copy()
+    rnn.z0 = z0.copy()
     rnn.wf = wf.copy()
     rnn.M = M.copy()
     rnn.init_state()
 
-    # Forward the state just once.
-    np.testing.assert_allclose(rnn.x, x)
-    np.testing.assert_allclose(rnn.dt, dt)
-    np.testing.assert_allclose(rnn.M, M)
-    np.testing.assert_allclose(rnn.r, r)
-    np.testing.assert_allclose(rnn.z, z)
-    np.testing.assert_allclose(rnn.wf, wf)
-
+    xs, rs = rnn.x.shape, rnn.r.shape
     rnn.forward()
+    assert xs == rnn.x.shape
+    assert rs == rnn.r.shape
+    np.testing.assert_allclose(rnn.x, x_start)
 
-    # Force the initial state and connections to be in the initial state.
-    rnn.x0 = x.copy()
-    rnn.z0 = z.copy()
+    # Force the initial state and connections to be in the initial state again.
+    rnn.x0 = x0.copy()
+    rnn.z0 = z0.copy()
     rnn.wf = wf.copy()
     rnn.M = M.copy()
     rnn.init_state()
