@@ -1,6 +1,7 @@
 import h5py
 import numpy as np
 import pandas as pd
+import scipy.sparse
 
 class ChaoticRnn(object):
     def __init__(self, N, p):
@@ -17,8 +18,8 @@ class ChaoticRnn(object):
         scale = 1.0 / np.sqrt(self.p * self.N)
         self.M = np.random.randn(self.N, self.N) * mask * self.g * scale
 
-        self.wo = np.zeros(N)
-        self.wf = 2.0 * (np.random.rand(N) - .5)
+        self.wo = np.zeros(self.N)
+        self.wf = 2.0 * (np.random.rand(self.N) - .5)
         self.dw = np.zeros(self.N)
 
     def random_state(self):
@@ -53,10 +54,8 @@ class ChaoticRnn(object):
             outcomes.append(
                 {'t': t,
                 'z': self.z.copy(),
-                'wo_len' : np.linalg.norm(self.wo),
-                'e': e,
-                'c': c,
-                'rPr': rPr}
+                'wo_len' : np.linalg.norm(self.wo)
+                }
             )
         return pd.DataFrame(outcomes)
 
