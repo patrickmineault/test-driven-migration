@@ -66,7 +66,7 @@ class ChaoticRnn(object):
         self.r = np.tanh(self.x)
         self.z = self.wo.dot(self.r)
 
-if __name__ == "__main__":
+def _run_tests():
     with h5py.File('inputs.mat', 'r') as f:
         # These are the reference inputs to the Matlab script.
         x0, z0, wf, dt, M, N, ft = (np.array(f['x0/value']).ravel(), 
@@ -111,3 +111,6 @@ if __name__ == "__main__":
     # Test the results
     np.testing.assert_allclose(results['z'].values, zt)
     np.testing.assert_allclose(results['wo_len'], wo_len)
+
+if __name__ == "__main__":
+    _run_tests()
